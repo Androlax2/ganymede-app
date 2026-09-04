@@ -30,7 +30,7 @@ const RESTYLE_MAP_PAGE: &str = r#"(function () {
   if (!location.hostname.endsWith('dofusdb.fr')) return;
   function inject() {
     var style = document.createElement('style');
-    style.textContent = '.grecaptcha-badge{visibility:hidden!important;} .q-header{display:none;}';
+    style.textContent = '.grecaptcha-badge{visibility:hidden!important;} .q-header{display:none;} #tools-map-bottom-banner { display: none; }';
     document.head.appendChild(style);
   }
   if (document.head) {
