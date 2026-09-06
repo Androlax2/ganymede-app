@@ -58,6 +58,20 @@ if [[ "$OSTYPE" == linux-gnu* ]]; then
     echo "Step G: Cleaning up temporary files..."
     rm -rf "$SQUASHFS_ROOT" appimagetool
 
+    # h) Re-sign the AppImage: the updater signature produced by the build refers to the
+    #    pre-repackaging file, so it no longer matches the repackaged AppImage.
+    if [ -n "${TAURI_SIGNING_PRIVATE_KEY:-}" ]; then
+      echo "Step H: Re-signing repackaged AppImage..."
+      if [ -f "$TAURI_SIGNING_PRIVATE_KEY" ]; then
+        KEY_ARGS=(-f "$TAURI_SIGNING_PRIVATE_KEY")
+      else
+        KEY_ARGS=(-k "$TAURI_SIGNING_PRIVATE_KEY")
+      fi
+      pnpm tauri signer sign "${KEY_ARGS[@]}" -p "${TAURI_SIGNING_PRIVATE_KEY_PASSWORD:-}" "$APPIMAGE"
+    else
+      echo "Step H: TAURI_SIGNING_PRIVATE_KEY is not set, skipping re-signing."
+    fi
+
     echo "Post-processing completed successfully!"
   else
     echo "Build failed with exit code $EXIT_CODE. Skipping post-processing."
