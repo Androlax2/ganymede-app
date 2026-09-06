@@ -96,7 +96,13 @@ jobs:
         run: pnpm i --frozen-lockfile
 
       - name: build (tauri)
-        run: bash scripts/tauri-build.sh build
+        run: |
+          if [ -n "${TAURI_SIGNING_PRIVATE_KEY:-}" ]; then
+            bash scripts/tauri-build.sh build
+          else
+            echo 'No signing key available (fork pull request): building without updater artifacts.'
+            bash scripts/tauri-build.sh build --config '{"bundle":{"createUpdaterArtifacts":false}}'
+          fi
 
       - name: upload artifact (AppImage)
         uses: actions/upload-artifact@v4
